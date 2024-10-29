@@ -1,0 +1,32 @@
+services:
+   bind9:
+      image: internetsystemsconsortium/bind9:9.20        #Imagen Bind9
+      container_name: proba_bind9
+      restart: always
+      ports:
+         - "54:54/tcp"
+         - "54:54/udp"                             #Usaremos el puerto 54 dado que el 53 en máquina virtual está ocupado
+         - "127.0.0.1:953:953/tcp"
+      networks:
+         red_bind9:
+            ipv4_address: 172.28.5.1
+      volumes:
+         - ./conf:/etc/bind
+         - ./zonas:var/lib/bind
+
+   cliente:
+      container_name: contenedor_alpine
+      image: alpine:latest
+      tty: true
+      stdin_open: true
+      dns:
+         - 172.28.5.1
+      networks:
+         red_bind9:
+            ipv4_address: 172.28.5.2
+
+
+networks:
+   red_bind9:
+      name: red_bind9
+      external: true #Esto indica que rede xa existe de forma externa ó .yml
