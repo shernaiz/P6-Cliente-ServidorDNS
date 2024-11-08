@@ -8,15 +8,16 @@ services:
          - "54:54/udp"                             #Usaremos el puerto 54 dado que el 53 en máquina virtual está ocupado
          - "127.0.0.1:953:953/tcp"
       networks:
-         red_bind9:
-            ipv4_address: 172.28.5.1
+        red_bind9:
+           ipv4_address: 172.28.5.1
       volumes:
-         - ./conf:/etc/bind
-         - ./zonas:var/lib/bind
+         - ./conf:/home/sandra/DNS/conf
+         - ./zonas:/home/sandra/DNS/zonas
 
    cliente:
       container_name: contenedor_alpine
       image: alpine:latest
+      platform: linux/amd64
       tty: true
       stdin_open: true
       dns:
@@ -28,5 +29,11 @@ services:
 
 networks:
    red_bind9:
+      driver: bridge
       name: red_bind9
-      external: true #Esto indica que rede xa existe de forma externa ó .yml
+      ipam:
+         config:
+            - subnet: 172.28.0.0/16
+              ip_range: 172.28.5.0/24
+              gateway: 172.28.5.254
+#      external: true #Esto indica que rede xa existe de forma externa ó .yml
